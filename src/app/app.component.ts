@@ -3,6 +3,7 @@ import { HomeComponent } from "./home/home.component";
 @Component({
   standalone: true,
   selector: "app-root",
+  imports: [HomeComponent],
   template: `
     <main>
       <header class="brand-name">
@@ -14,12 +15,11 @@ import { HomeComponent } from "./home/home.component";
         />
       </header>
       <section class="content">
-        <app-home></app-home>
+        <app-home />
       </section>
     </main>
   `,
   styleUrls: ["./app.component.css"],
-  imports: [HomeComponent],
 })
 export class AppComponent {
   title = "homes";
