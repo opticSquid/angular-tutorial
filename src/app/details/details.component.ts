@@ -40,11 +40,11 @@ import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
         -->
         <form [formGroup]="applyForm" (submit)="submitApplication()">
           <label for="first-name">First Name</label>
-          <input id="first-name" type="text" formControlName="firstName"/>
+          <input id="first-name" type="text" formControlName="firstName" />
           <label for="last-name">Last Name</label>
-          <input id="last-name" type="text" formControlName="lastName"/>
+          <input id="last-name" type="text" formControlName="lastName" />
           <label for="email">Email</label>
-          <input id="email" type="text" formControlName="email"/>
+          <input id="email" type="text" formControlName="email" />
           <button type="submit" class="primary">Apply Now</button>
         </form>
       </section>
@@ -57,24 +57,30 @@ export class DetailsComponent {
   housingLocation: HousingLocation | undefined;
   housingService: HousingService = inject(HousingService);
   // Form Model
-  applyForm:FormGroup = new FormGroup(
-    {
-      firstName: new FormControl(''),
-      lastName: new FormControl(''),
-      email: new FormControl('')
-    });
+  applyForm: FormGroup = new FormGroup({
+    firstName: new FormControl(""),
+    lastName: new FormControl(""),
+    email: new FormControl(""),
+  });
   constructor() {
     const hosuingLocationId = Number(this.route.snapshot.params["id"]);
-    this.housingLocation =
-      this.housingService.getHousingLocationById(hosuingLocationId);
+    this.housingService
+      .getHousingLocationById(hosuingLocationId)
+      .then((housingLocation: HousingLocation | undefined) => {
+        this.housingLocation = housingLocation;
+      })
+      .catch((error) => {
+        console.error("Error in fetching location details");
+      });
   }
   /**
    * The nullish coalescing (??) operator is a logical operator that returns its right-hand side operand when its left-hand side operand is null or undefined, and otherwise returns its left-hand side operand.
    */
-  submitApplication():void{
+  submitApplication(): void {
     this.housingService.submitApplication(
-      this.applyForm.value.firstName ?? '',
-      this.applyForm.value.lastName ?? '',
-      this.applyForm.value.email ?? '');
+      this.applyForm.value.firstName ?? "",
+      this.applyForm.value.lastName ?? "",
+      this.applyForm.value.email ?? ""
+    );
   }
 }
