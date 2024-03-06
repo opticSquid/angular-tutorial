@@ -3,10 +3,11 @@ import { CommonModule } from "@angular/common";
 import { ActivatedRoute } from "@angular/router";
 import { HousingService } from "../housing.service";
 import { HousingLocation } from "../housing-location";
+import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 @Component({
   selector: "app-details",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   template: `
     <article>
       <!-- "?" is used to guard gainst undefined. If id property is undefined it will not be accessed -->
@@ -33,7 +34,19 @@ import { HousingLocation } from "../housing-location";
       </section>
       <section class="listing-apply">
         <h2 class="section-heading">Apply Now to live here</h2>
-        <button class="primary" type="button">Apply Now</button>
+        <!--
+        formGroup is a property so it is binded with []
+        submit is an event so it is binded with ()
+        -->
+        <form [formGroup]="applyForm" (submit)="submitApplication()">
+          <label for="first-name">First Name</label>
+          <input id="first-name" type="text" formControlName="firstName"/>
+          <label for="last-name">Last Name</label>
+          <input id="last-name" type="text" formControlName="lastName"/>
+          <label for="email">Email</label>
+          <input id="email" type="text" formControlName="email"/>
+          <button type="submit" class="primary">Apply Now</button>
+        </form>
       </section>
     </article>
   `,
@@ -43,9 +56,25 @@ export class DetailsComponent {
   route: ActivatedRoute = inject(ActivatedRoute);
   housingLocation: HousingLocation | undefined;
   housingService: HousingService = inject(HousingService);
+  // Form Model
+  applyForm:FormGroup = new FormGroup(
+    {
+      firstName: new FormControl(''),
+      lastName: new FormControl(''),
+      email: new FormControl('')
+    });
   constructor() {
     const hosuingLocationId = Number(this.route.snapshot.params["id"]);
     this.housingLocation =
       this.housingService.getHousingLocationById(hosuingLocationId);
+  }
+  /**
+   * The nullish coalescing (??) operator is a logical operator that returns its right-hand side operand when its left-hand side operand is null or undefined, and otherwise returns its left-hand side operand.
+   */
+  submitApplication():void{
+    this.housingService.submitApplication(
+      this.applyForm.value.firstName ?? '',
+      this.applyForm.value.lastName ?? '',
+      this.applyForm.value.email ?? '');
   }
 }
